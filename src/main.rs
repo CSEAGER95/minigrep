@@ -1,5 +1,5 @@
 use std::error::Error;
-use minigrep::search;
+use minigrep::{search, search_case_insensitive};
 use std::process;
 use std::fs; //file reader crate
 use std::env;//a crate that allows for the accepting of args variables input when a function is run
@@ -14,38 +14,16 @@ fn main() {
         println!("problem parsing arguments {}", err);
         process::exit(1);
     });
-    // dbg!(args);
-                //printing a vector using a debug macro
-                //the first value in the args vector will be
-                //"target/debug/minigrep", which is name of the binary or the "program name"
-    
-
-
-
-    print!("searching for {}", config.query);
-    println!(" in file {}", config.file_path);
-    if let Err(e) = run(config) {
-        println!("Application error: {}", e);
+        if let Err(e) = run(config) {
+        println!("Application error: {e}");
         process::exit(1);
     }
-    
-}
-
-fn run(config: Config) -> Result<(), Box<dyn Error>> { //dyn is short for dynamic, imported with
-                                                       //error at the top. this allows us to return
-                                                       //a type that implements the error trait
-    let contents = fs::read_to_string(config.file_path)?; //? returns the error value from the
-                                                          //current functions
-    for line in search(&config.query, &contents) {
-        println!("{}",line);
-    }
-
-    Ok(())// successful return value is an Ok type
 }
 
 struct Config {
-    query: String,
-    file_path: String,
+    pub query: String,
+    pub file_path: String,
+    pub ignore_case: bool,
 }
 
 impl Config {
@@ -58,6 +36,21 @@ impl Config {
                                      //problems. 
         let file_path = args[2].clone();
 
-        Ok(Config {query, file_path})
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        Ok(Config {query, file_path, ignore_case,})
     }
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.file_path)?;
+    let results = if config.ignore_case {
+        search_case_insensitive(&config.query, &contents) 
+    } else {
+        search(&config.query, &contents)
+    };
+    for line in results {
+        println!("{line}");
+    }
+    Ok(())
 }
