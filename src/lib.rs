@@ -39,6 +39,18 @@ Duct tape.";
     }
 
     #[test]
+    fn whitespace_excluded() {
+        let query = "Pickthree.";
+        let contents = "\
+        Rust:
+        safe, fast, productive.
+        Pick three
+        Duct tape.";
+
+            assert_eq!(vec!["Pick three"], search_whitespace_excluded(query, contents));
+    }
+
+    #[test]
     fn case_insensitive() {
         let query = "rUsT";
         let contents = "\
