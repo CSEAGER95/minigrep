@@ -20,6 +20,18 @@ pub fn search_case_insensitive<'a> (query: &str, contents: &'a str,) -> Vec<&'a 
     results
 }
 
+pub fn search_exact_word<'a> (query: &str, contents: &'a str,) -> Vec<&'a str> {
+    let query = format!("{}{}{}", ' ',query, ' ');
+    let query_new_line = format!("{}{}",query, ' ');
+    let mut results = Vec::new();
+    for line in contents.lines() {
+        if line.contains(&query) || line.contains(&query_new_line) {
+            results.push(line);
+        }
+    }
+    results
+}
+
 
 
 #[cfg(test)]
@@ -39,15 +51,16 @@ Duct tape.";
     }
 
     #[test]
-    fn whitespace_excluded() {
-        let query = "Pickthree.";
+    fn exact_word() {
+        let query = "a";
         let contents = "\
-        Rust:
-        safe, fast, productive.
-        Pick three
-        Duct tape.";
+Rust:
 
-            assert_eq!(vec!["Pick three"], search_whitespace_excluded(query, contents));
+safe, fast, productive.
+Pick three
+Duct a tape.";
+
+            assert_eq!(vec!["Duct a tape."], search_exact_word(query, contents));
     }
 
     #[test]

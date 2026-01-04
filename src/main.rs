@@ -1,5 +1,5 @@
 use std::error::Error;
-use minigrep::{search, search_case_insensitive};
+use minigrep::{search, search_case_insensitive, search_exact_word};
 use std::process;
 use std::fs; //file reader crate
 use std::env;//a crate that allows for the accepting of args variables input when a function is run
@@ -24,6 +24,7 @@ struct Config {
     pub query: String,
     pub file_path: String,
     pub ignore_case: bool,
+    pub exact_word: bool,
 }
 
 impl Config {
@@ -38,7 +39,9 @@ impl Config {
 
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
-        Ok(Config {query, file_path, ignore_case,})
+        let exact_word = env::var("EXACT_WORD").is_ok();
+
+        Ok(Config {query, file_path, ignore_case, exact_word})
     }
 }
 
@@ -46,6 +49,8 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
     let results = if config.ignore_case {
         search_case_insensitive(&config.query, &contents) 
+    } else if config.exact_word {
+        search_exact_word(&config.query, &contents)
     } else {
         search(&config.query, &contents)
     };
