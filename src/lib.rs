@@ -20,12 +20,16 @@ pub fn search_case_insensitive<'a> (query: &str, contents: &'a str,) -> Vec<&'a 
     results
 }
 
+//as it stands right now, it doesn't check for words at the front of a new line, or words prepended or appeded with a symbol
+//such as: query = "fails"
+//a comma connected to the searched word fails, 
+//fails when the queried word is at the start of a new line,
+//when the query is at the end of the new line it also fails
 pub fn search_exact_word<'a> (query: &str, contents: &'a str,) -> Vec<&'a str> {
     let query = format!("{}{}{}", ' ',query, ' ');
-    let query_new_line = format!("{}{}",query, ' ');
     let mut results = Vec::new();
     for line in contents.lines() {
-        if line.contains(&query) || line.contains(&query_new_line) {
+        if line.contains(&query) {
             results.push(line);
         }
     }
