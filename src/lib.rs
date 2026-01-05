@@ -66,6 +66,17 @@ Duct a tape.";
 
             assert_eq!(vec!["Duct a tape."], search_exact_word(query, contents));
     }
+        fn exact_word2() {
+        let query = "Rust";
+        let contents = "\
+Rust:
+
+safe, fast, productive.
+Pick three
+Duct a tape.";
+
+            assert_eq!(vec!["Rust:"], search_exact_word(query, contents));
+    }
 
     #[test]
     fn case_insensitive() {
