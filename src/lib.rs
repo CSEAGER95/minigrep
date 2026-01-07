@@ -92,5 +92,20 @@ Trust me.";
             search_case_insensitive(query, contents)
         );
     }
+
+    #[test]
+    fn case_word_count() {
+        let query = "safe";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+
+        assert_eq!(
+            vec!["1"],
+            search_case_word_count(query, contents)
+        );
+    }
 }
 
